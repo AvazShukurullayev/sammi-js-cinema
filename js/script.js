@@ -98,8 +98,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Modal
     const modalTrigger = document.querySelector("[data-modal]"),
-        modal = document.querySelector(".modal"),
-        modalCloseBtn = document.querySelector("[data-close]");
+        modal = document.querySelector(".modal");
+    // hozi kerak emas
+    // modalCloseBtn = document.querySelector("[data-close]");
 
     function closeModal() {
         modal.classList.add("hide")
@@ -116,10 +117,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     modalTrigger.addEventListener("click", openModal)
 
-    modalCloseBtn.addEventListener("click", closeModal)
+    // bu ham keremas
+    // modalCloseBtn.addEventListener("click", closeModal)
 
     modal.addEventListener("click", (e) => {
-        if (e.target == modal) {
+        if (e.target == modal || e.target.getAttribute('close-modal') == "") {
             closeModal()
         }
     })
@@ -255,17 +257,44 @@ document.addEventListener("DOMContentLoaded", () => {
             request.addEventListener("load", () => {
                 if (request.status === 200) {
                     console.log(request.response)
-                    statusMessage.textContent = msg.success
+                    // statusMessage.textContent = msg.success
+                    showThanksModal(msg.success)
                     form.reset()
                     setTimeout(() => {
                         statusMessage.remove()
                     }, 2000)
                 } else {
-                    statusMessage.textContent = msg.failure
+                    // statusMessage.textContent = msg.failure
+                    showThanksModal(msg.failure)
                 }
             })
         })
     }
 
+    // modal oynani dynamic chiqaramiz
+    function showThanksModal(message) {
+        const prevModalDialog = document.querySelector(".modal__dialog")
+
+        // prevModalDialog.classList.remove("show")
+        prevModalDialog.classList.add("hide")
+        openModal()
+
+        const thanksModal = document.createElement('div')
+        thanksModal.classList.add("modal__dialog")
+        thanksModal.innerHTML = `
+            <div class="modal__content">
+                <div data-close class="modal__close">&times;</div>
+                <div class="modal__title">${message}</div>
+            </div>
+        `
+
+        document.querySelector(".modal").append(thanksModal)
+        setTimeout(()=> {
+            thanksModal.remove()
+            prevModalDialog.classList.add("show")
+            prevModalDialog.classList.remove("hide")
+            closeModal()
+        },4000)
+    }
 
 })
