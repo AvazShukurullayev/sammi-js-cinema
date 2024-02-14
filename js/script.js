@@ -43,9 +43,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Timer
     const deadline = "2024-08-11"
+    const newDate = new Date()
 
     function getTimeRemaining(deadline) {
-        const timer = Date.parse(deadline) - Date.parse(new Date())
+        const timer = Date.parse(deadline) - Date.parse(newDate)
         let days, hours, minutes, seconds
         if (timer <= 0) {
             days = 0
@@ -121,13 +122,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // modalCloseBtn.addEventListener("click", closeModal)
 
     modal.addEventListener("click", (e) => {
-        if (e.target == modal || e.target.getAttribute('close-modal') == "") {
+        if (e.target === modal || e.target.getAttribute('close-modal') === "") {
             closeModal()
         }
     })
 
     document.addEventListener("keydown", (e) => {
-        if (e.code == "Escape" && modal.classList.contains("show")) {
+        if (e.code === "Escape" && modal.classList.contains("show")) {
             closeModal()
         }
     })
@@ -185,39 +186,53 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    new MenuCard(
-        "img/tabs/1.png",
-        'vegy',
-        'Plan "useal"',
-        'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugit nesciunt facere, sequi exercitationem praesentium ab cupiditate beatae debitis perspiciatis itaque quaerat id modi corporis delectus ratione nobis harum voluptatum in.',
-        10,
-        ".menu .container"
-    ).render()
+    async function getResource(url) {
+        const response = await fetch(url)
 
-    new MenuCard(
-        "img/tabs/2.jpg",
-        'elite',
-        'Plan "Premium"',
-        'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugit nesciunt facere, sequi exercitationem praesentium ab cupiditate beatae debitis perspiciatis itaque quaerat id modi corporis delectus ratione nobis harum voluptatum in.',
-        20,
-        ".menu .container"
-    ).render()
+        return await response.json()
+    }
 
-    new MenuCard(
-        "img/tabs/3.jpg",
-        'vip',
-        'Plan VIP',
-        'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugit nesciunt facere, sequi exercitationem praesentium ab cupiditate beatae debitis perspiciatis itaque quaerat id modi corporis delectus ratione nobis harum voluptatum in.',
-        30,
-        ".menu .container"
-    ).render()
+    getResource("http://localhost:3000/menu")
+        .then((data) => {
+            data.forEach(({src, alt, title, desc, price}) => {
+                new MenuCard(src, alt, title, desc, price, ".menu .container").render()
+            })
+        })
+        .catch(e => console.log(e))
+    // class keremas uni orniga function yozamiz
+    // new MenuCard(
+    //     "img/tabs/1.png",
+    //     'vegy',
+    //     'Plan "useal"',
+    //     'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugit nesciunt facere, sequi exercitationem praesentium ab cupiditate beatae debitis perspiciatis itaque quaerat id modi corporis delectus ratione nobis harum voluptatum in.',
+    //     10,
+    //     ".menu .container"
+    // ).render()
+    //
+    // new MenuCard(
+    //     "img/tabs/2.jpg",
+    //     'elite',
+    //     'Plan "Premium"',
+    //     'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugit nesciunt facere, sequi exercitationem praesentium ab cupiditate beatae debitis perspiciatis itaque quaerat id modi corporis delectus ratione nobis harum voluptatum in.',
+    //     20,
+    //     ".menu .container"
+    // ).render()
+    //
+    // new MenuCard(
+    //     "img/tabs/3.jpg",
+    //     'vip',
+    //     'Plan VIP',
+    //     'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugit nesciunt facere, sequi exercitationem praesentium ab cupiditate beatae debitis perspiciatis itaque quaerat id modi corporis delectus ratione nobis harum voluptatum in.',
+    //     30,
+    //     ".menu .container"
+    // ).render()
 
 
 // Form
     const forms = document.querySelectorAll("form")
 
     forms.forEach(form => {
-        postData(form)
+        bindPostData(form)
     })
 
     const msg = {
@@ -226,7 +241,17 @@ document.addEventListener("DOMContentLoaded", () => {
         failure: "Something went wrong"
     }
 
-    function postData(form) {
+    async function postData(url, data) {
+        const res = await fetch(url, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: data
+        })
+        console.log("res => ", await res)
+        return await res.json()
+    }
+
+    function bindPostData(form) {
         form.addEventListener("submit", (e) => {
             e.preventDefault()
 
@@ -242,14 +267,16 @@ document.addEventListener("DOMContentLoaded", () => {
             // console.log("formData => ", formData)
             // request.send(formData)
 
-            const obj = {}
+            // const obj = {}
             // request.setRequestHeader("Content-Type", "application/json")
 
             const formData = new FormData(form)
             // formData = object qaytaradi
-            formData.forEach((val, key) => {
-                obj[key] = val
-            })
+            // formData.forEach((val, key) => {
+            //     obj[key] = val
+            // })
+
+            const json = JSON.stringify(Object.fromEntries(formData.entries()))
             // const json = JSON.stringify(obj)
             // console.log("formData => ", formData)
             // request.send(json)
@@ -270,14 +297,16 @@ document.addEventListener("DOMContentLoaded", () => {
             // })
 
             //     fetch practice
-            fetch("server.php", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(obj),
-            })
-                .then(data => data.text())
+            // fetch("http://localhost:3000/request", {
+            //     method: "POST",
+            //     headers: {
+            //         "Content-Type": "application/json"
+            //     },
+            //     body: JSON.stringify(obj),
+            // })
+            //     .then(data => data.text())
+
+            postData("http://localhost:3000/request", json)
                 .then(r => {
                     console.log(r)
                     showThanksModal(msg.success)
@@ -321,5 +350,5 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 //     fetch server json
-    fetch("http://localhost:3000/menu").then(data => data.json()).then(res => console.log(res))
+//     fetch("http://localhost:3000/menu").then(data => data.json()).then(res => console.log(res))
 })
