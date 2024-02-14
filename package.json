@@ -1,0 +1,19 @@
+{
+  "name": "2-website",
+  "version": "1.0.0",
+  "description": "Sammi.ac platformasida Javascript ni organvomman va loyiha qvommiz",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Avaz Shukurullayev",
+  "license": "ISC",
+  "keywords": [
+    "js",
+    "html",
+    "serial"
+  ],
+  "devDependencies": {
+    "json-server": "^1.0.0-alpha.23"
+  }
+}
