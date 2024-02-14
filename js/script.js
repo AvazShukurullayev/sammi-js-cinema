@@ -234,8 +234,8 @@ document.addEventListener("DOMContentLoaded", () => {
             statusMessage.textContent = msg.loading
             form.append(statusMessage)
 
-            const request = new XMLHttpRequest()
-            request.open("POST", "server.php")
+            // const request = new XMLHttpRequest()
+            // request.open("POST", "server.php")
             // setRequestHeader kerak emas chunki formData qoyib beradi
             // request.setRequestHeader("Content-Type", "multipart/form-data")
             // const formData = new FormData(form)
@@ -243,31 +243,54 @@ document.addEventListener("DOMContentLoaded", () => {
             // request.send(formData)
 
             const obj = {}
-            request.setRequestHeader("Content-Type", "application/json")
+            // request.setRequestHeader("Content-Type", "application/json")
 
             const formData = new FormData(form)
-            // formData = object
+            // formData = object qaytaradi
             formData.forEach((val, key) => {
                 obj[key] = val
             })
-            const json = JSON.stringify(obj)
+            // const json = JSON.stringify(obj)
             // console.log("formData => ", formData)
-            request.send(json)
+            // request.send(json)
 
-            request.addEventListener("load", () => {
-                if (request.status === 200) {
-                    console.log(request.response)
-                    // statusMessage.textContent = msg.success
-                    showThanksModal(msg.success)
-                    form.reset()
-                    setTimeout(() => {
-                        statusMessage.remove()
-                    }, 2000)
-                } else {
-                    // statusMessage.textContent = msg.failure
-                    showThanksModal(msg.failure)
-                }
+            // request.addEventListener("load", () => {
+            //     if (request.status === 200) {
+            //         console.log(request.response)
+            //         // statusMessage.textContent = msg.success
+            //         showThanksModal(msg.success)
+            //         form.reset()
+            //         setTimeout(() => {
+            //             statusMessage.remove()
+            //         }, 2000)
+            //     } else {
+            //         // statusMessage.textContent = msg.failure
+            //         showThanksModal(msg.failure)
+            //     }
+            // })
+
+            //     fetch practice
+            fetch("server.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(obj),
             })
+                .then(data => data.text())
+                .then(r => {
+                    console.log(r)
+                    showThanksModal(msg.success)
+                    statusMessage.remove()
+                })
+                .catch(e => {
+                    console.log(e)
+                    showThanksModal(msg.failure)
+                })
+                .finally(() => {
+                    console.log("Finally")
+                    form.reset()
+                })
         })
     }
 
@@ -289,12 +312,12 @@ document.addEventListener("DOMContentLoaded", () => {
         `
 
         document.querySelector(".modal").append(thanksModal)
-        setTimeout(()=> {
+        setTimeout(() => {
             thanksModal.remove()
             prevModalDialog.classList.add("show")
             prevModalDialog.classList.remove("hide")
             closeModal()
-        },4000)
+        }, 4000)
     }
 
 })
