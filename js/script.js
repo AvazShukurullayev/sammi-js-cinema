@@ -186,19 +186,33 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    async function getResource(url) {
-        const response = await fetch(url)
+    axios.get("http://localhost:3000/menu").then(({data}) => {
+        console.log(data)
+        data.forEach(({
+                          src,
+                          alt,
+                          title,
+                          desc,
+                          price
+                      }) => new MenuCard(src, alt, title, desc, price, ".menu .container").render())
+    })
 
-        return await response.json()
-    }
+    // async function getResource(url) {
+    //     const response = await fetch(url)
+    //
+    //     return await response.json()
+    // }
+    //
+    // getResource("http://localhost:3000/menu")
+    //     .then((data) => data.forEach(({
+    //                                       src,
+    //                                       alt,
+    //                                       title,
+    //                                       desc,
+    //                                       price
+    //                                   }) => new MenuCard(src, alt, title, desc, price, ".menu .container").render()))
+    //     .catch(e => console.log(e))
 
-    getResource("http://localhost:3000/menu")
-        .then((data) => {
-            data.forEach(({src, alt, title, desc, price}) => {
-                new MenuCard(src, alt, title, desc, price, ".menu .container").render()
-            })
-        })
-        .catch(e => console.log(e))
     // class keremas uni orniga function yozamiz
     // new MenuCard(
     //     "img/tabs/1.png",
@@ -351,4 +365,52 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //     fetch server json
 //     fetch("http://localhost:3000/menu").then(data => data.json()).then(res => console.log(res))
+
+//     slider
+    const slides = document.querySelectorAll(".offer__slide"),
+        next = document.querySelector(".offer__slider-next"),
+        prev = document.querySelector(".offer__slider-prev"),
+        currentSlide = document.querySelector("#current"),
+        totalSlide = document.querySelector("#total")
+
+
+    let slideIndex = 1
+    showSlides(slideIndex)
+    if (slides.length < 10) {
+        totalSlide.textContent = `0${slides.length}`
+    } else {
+        totalSlide.textContent = slides.length
+    }
+
+    function showSlides(index) {
+        if (index > slides.length) {
+            slideIndex = 1
+        }
+        if (index < 1) {
+            slideIndex = slides.length
+        }
+
+        slides.forEach(slide => slide.style.display = "none")
+        slides[slideIndex - 1].style.display = "block"
+        // currentSlide.textContent = (1 <= slideIndex && slideIndex <= 9) ? `0${slideIndex}` : slideIndex;
+
+        if (slides.length < 10) {
+            currentSlide.textContent = `0${slideIndex}`
+        } else {
+            currentSlide.textContent = slideIndex
+        }
+    }
+
+    function plusSlide(idx) {
+        showSlides(slideIndex += idx)
+    }
+
+    next.addEventListener("click", () => {
+        plusSlide(1)
+    })
+
+    prev.addEventListener("click", () => {
+        plusSlide(-1)
+    })
+
 })
