@@ -372,11 +372,70 @@ document.addEventListener("DOMContentLoaded", () => {
         prev = document.querySelector(".offer__slider-prev"),
         currentSlide = document.querySelector("#current"),
         totalSlide = document.querySelector("#total"),
-    slideWrapper = document.querySelector(".offer__slider-wrapper"),
-        slideInner = document.querySelector(".")
+        slidesWrapper = document.querySelector(".offer__slider-wrapper"),
+        slidesField = document.querySelector(".offer__slider-inner"),
+        width = window.getComputedStyle(slidesWrapper).width
 
-
+    // ---******************************************************************---
+    // CAROUSEL SLIDER
     let slideIndex = 1
+    let offset = 0
+
+    slidesField.style.width = `${100 * slides.length}%`
+    slidesField.style.display = "flex"
+    slidesField.style.transition = "0.7s ease-in all"
+    slidesWrapper.style.overflow = "hidden"
+    slides.forEach(slide => {
+        slide.style.width = width
+    })
+
+    function slideCounter(slideIndex) {
+        if (0 < slides.length && slides.length < 10) {
+            currentSlide.textContent = `0${slideIndex}`
+            totalSlide.textContent = `0${slides.length}`
+        } else {
+            currentSlide.textContent = `${slideIndex}`
+            totalSlide.textContent = `${slides.length}`
+        }
+    }
+
+    slideCounter(slideIndex)
+    next.addEventListener("click", () => {
+        if (offset === +width.slice(0, width.length - 2) * (slides.length - 1)) {
+            offset = 0
+        } else {
+            offset += +width.slice(0, width.length - 2)
+        }
+        slidesField.style.transform = `translateX(-${offset}px)`
+        if (slideIndex >= slides.length) {
+            slideIndex = 1
+        } else {
+            slideIndex++
+        }
+        slideCounter(slideIndex)
+    })
+
+    prev.addEventListener("click", () => {
+        if (offset === 0) {
+            offset = +width.slice(0, width.length - 2) * (slides.length - 1)
+        } else {
+            offset -= +width.slice(0, width.length - 2)
+        }
+        slidesField.style.transform = `translateX(-${offset}px)`
+        if (slideIndex <= 1) {
+            slideIndex = slides.length
+        } else {
+            slideIndex--
+        }
+        slideCounter(slideIndex)
+    })
+    // ---******************************************************************---
+
+    // ---******************************************************************---
+    //                          EASY SLIDER
+    // ---******************************************************************---
+
+    /*let slideIndex = 1
     showSlides(slideIndex)
     if (slides.length < 10) {
         totalSlide.textContent = `0${slides.length}`
@@ -413,6 +472,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     prev.addEventListener("click", () => {
         plusSlide(-1)
-    })
+    })*/
 
 })
